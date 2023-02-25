@@ -1,0 +1,4 @@
+Economy-300.00₹
+PremiumEconomy-600.00₹
+Business-900.00₹
+FirstClass-1200.00₹
