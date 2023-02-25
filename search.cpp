@@ -40,9 +40,10 @@ class bookAndTicket{
         std::string sTravelDate;
         std::string sSelectedOffer;
         std::string sEmail;
-        char cGender = 'N';
+        char cGender;
         std::string sDateOfBirth;
-        unsigned int ticketNumber;
+        std::string sRecordLocator;
+        unsigned int iTicketNumber;
 
         //creating a no arg constructor & initializing vars to some default values
         bookAndTicket(){
@@ -51,6 +52,14 @@ class bookAndTicket{
             sItinerary = "DXB-PNQ";
             sName = "Aditya";
             bTicketingStatus = false;
+
+            sTravelDate = "10-05-2023";
+            sSelectedOffer = "PremiumClass";
+            sEmail = "test@gmail.com";
+            cGender = 'N';
+            sDateOfBirth = "03-02-1998";
+            sRecordLocator = "";
+            iTicketNumber = 1234567890;
         }
 
         //function declarations/prototype
@@ -66,9 +75,9 @@ int main(){
     std::cout << a SPACE << "OK" << endl; NEWLINE
 
     bookAndTicket pnr1;
-    pnr1.ampAirShopping();
+    //pnr1.ampAirShopping();
     //pnr1.ampOfferPrice();
-    //pnr1.ampOrderCreate();
+    pnr1.ampOrderCreate();
 
     return 0;
 }
@@ -294,9 +303,25 @@ void bookAndTicket::ampOrderCreate()
     NEWLINE
     if(cChoice == 'Y' || cChoice == 'y'){
         srand(time(NULL));
-        ticketNumber = rand();
+        iTicketNumber = rand();
+        sRecordLocator = sRecordLocator + sName.at(0) + sItinerary[2] + cGender + sEmail[4] + sPhoneNumber.at(5) + sName[3];
+        
+        //converting all characters to uppercase
+        for(int i=0;sRecordLocator[i]!=0;i++)
+        {
+            if(sRecordLocator[i]<='z' && sRecordLocator[i]>='a')
+            sRecordLocator[i]+='A'-'a';
+        }
+        
+
         std::cout << "Documents Issued Successfully"; NEWLINE
-        std::cout << "Your Ticket Number is : " << ticketNumber; NEWLINE
+        std::cout << "Your Record Locator (PNR) is  : " << sRecordLocator; NEWLINE
+        std::cout << "Your Ticket Number is         : " << iTicketNumber; NEWLINE
     }
     NEWLINE
+
+    //Action Items
+    //Change status of ticketing flag & add time of ticketing too
+    //Export this ticket in SPRK format & PNR details to a txt file
+    //Make sure you are able to access & show the output if someone enters the PNR as OrderRetrieve
 }
