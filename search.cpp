@@ -12,11 +12,15 @@
     //once PNR generated I should be able to modify any of above 5 elements independently  
 
 //4. Ticket Issuance - OC
+//5. Export ticket as text file
+//6. Should be able Retrieve that ticket
 
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 
 using std::endl;
 
@@ -38,6 +42,7 @@ class bookAndTicket{
         std::string sEmail;
         char cGender = 'N';
         std::string sDateOfBirth;
+        unsigned int ticketNumber;
 
         //creating a no arg constructor & initializing vars to some default values
         bookAndTicket(){
@@ -77,24 +82,18 @@ void bookAndTicket::enterDetails(){
 
     std::cout << "Enter Name : ";
     std::getline(std::cin, sName);
-    std::cout << sName << endl; NEWLINE
 
     std::cout << "Enter Phone Number : ";
     std::getline(std::cin, sPhoneNumber);
-    std::cout << sPhoneNumber << endl; NEWLINE
 
     std::cout << "Enter Email ID : ";
     std::getline(std::cin, sEmail);
-    std::cout << sEmail << endl; NEWLINE
 
     std::cout << "Enter Date Of Birth (DD-MM-YYYY) : ";
     std::getline(std::cin, sDateOfBirth);
-    std::cout << sDateOfBirth << endl; NEWLINE
 
     std::cout << "Enter Gender (F/M) : ";
     std::cin >> cGender;
-    std::cout << cGender << endl; NEWLINE
-
 }
 
 void bookAndTicket::ampAirShopping()
@@ -240,12 +239,16 @@ void bookAndTicket::ampOfferPrice(){
         std::cout << "Accepted Offer is " << sTempVec.at(3); NEWLINE
         sSelectedOffer = sTempVec.at(3);
         break;
+
+        default:
+        std::cout << "Wrong Option Entered"; NEWLINE
+        exit(1);
     }
 
     do
         {
             NEWLINE
-            std::cout << "Continue to Book & Issue Ticket (Y/N) ? : "; NEWLINE
+            std::cout << "Continue to Book & Issue Ticket (Y/N) ? : ";
             std::cin >> cCharOption;
 
             if(cCharOption == 'Y' || cCharOption == 'y'){
@@ -265,21 +268,35 @@ void bookAndTicket::ampOrderCreate()
     //create PNR & issue ticket assuming payment & mode is always provided immediately & is cash
 
     //local vars
-
+    char cChoice = 'N';
 
     NEWLINE
     enterDetails();
 
     //show all details
+    NEWLINE
     std::cout << "-----Entered details are as below-----"; NEWLINE
     std::cout << "Name of Passenger     : " << sName; NEWLINE
     std::cout << "Phone Number          : " << sPhoneNumber; NEWLINE
     std::cout << "Date Of Birth         : " << sDateOfBirth; NEWLINE
     std::cout << "EmailID               : " << sEmail; NEWLINE
     std::cout << "Gender                : " << cGender; NEWLINE
-    std::cout << "Name of Passenger     : " << sName; NEWLINE
     std::cout << "Itinerary             : " << sItinerary; NEWLINE
     std::cout << "Offer Selected        : " << sSelectedOffer; NEWLINE
     std::cout << "Date Of Travel        : " << sTravelDate; NEWLINE
     std::cout << "Reservation Office    : " << sReservationPCC; NEWLINE
+
+    NEWLINE
+    std::cout << "Form of Payment : CASH"; NEWLINE
+    std::cout << "Issue Documents ? (Y/N) : ";
+    std::cin >> cChoice;
+
+    NEWLINE
+    if(cChoice == 'Y' || cChoice == 'y'){
+        srand(time(NULL));
+        ticketNumber = rand();
+        std::cout << "Documents Issued Successfully"; NEWLINE
+        std::cout << "Your Ticket Number is : " << ticketNumber; NEWLINE
+    }
+    NEWLINE
 }
