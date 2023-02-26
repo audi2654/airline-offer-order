@@ -21,6 +21,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <sstream>
 
 using std::endl;
 
@@ -44,6 +45,7 @@ class bookAndTicket{
         std::string sDateOfBirth;
         std::string sRecordLocator;
         unsigned int iTicketNumber;
+        std::string sTicketingTime;
 
         //creating a no arg constructor & initializing vars to some default values
         bookAndTicket(){
@@ -60,25 +62,26 @@ class bookAndTicket{
             sDateOfBirth = "03-02-1998";
             sRecordLocator = "";
             iTicketNumber = 1234567890;
+            sTicketingTime = "";
         }
 
         //function declarations/prototype
         void enterDetails();
+        void getCurrentTime();
         void ampAirShopping();
         void ampOfferPrice();
         void ampOrderCreate();
+        void ampOrderRetrieve();
 };
 
 int main(){
     int a = {199+1};
 
-    std::cout << a SPACE << "OK" << endl; NEWLINE
-
     bookAndTicket pnr1;
-    //pnr1.ampAirShopping();
+    pnr1.ampAirShopping();
     //pnr1.ampOfferPrice();
-    pnr1.ampOrderCreate();
-
+    //pnr1.ampOrderCreate();
+    pnr1.ampOrderRetrieve();
     return 0;
 }
 
@@ -103,6 +106,23 @@ void bookAndTicket::enterDetails(){
 
     std::cout << "Enter Gender (F/M) : ";
     std::cin >> cGender;
+}
+
+void bookAndTicket::getCurrentTime(){
+    time_t currentTime;
+    tm *currentTimeStruct;
+
+    char dateBuff[100];
+    char timeBuff[100];
+
+    time(&currentTime);
+
+    currentTimeStruct = localtime(&currentTime);
+
+    strftime(timeBuff, 50, "%T", currentTimeStruct);
+    strftime(dateBuff, 50, "%B %d %Y", currentTimeStruct);
+
+    sTicketingTime = sTicketingTime + timeBuff + " " + dateBuff;
 }
 
 void bookAndTicket::ampAirShopping()
@@ -278,6 +298,11 @@ void bookAndTicket::ampOrderCreate()
 
     //local vars
     char cChoice = 'N';
+    std::ofstream outputFile;
+    std::string sTktNumStr;
+
+
+    //function decl
 
     NEWLINE
     enterDetails();
@@ -296,7 +321,7 @@ void bookAndTicket::ampOrderCreate()
     std::cout << "Reservation Office    : " << sReservationPCC; NEWLINE
 
     NEWLINE
-    std::cout << "Form of Payment : CASH"; NEWLINE
+    std::cout << "Default Form of Payment : CASH"; NEWLINE
     std::cout << "Issue Documents ? (Y/N) : ";
     std::cin >> cChoice;
 
@@ -304,24 +329,86 @@ void bookAndTicket::ampOrderCreate()
     if(cChoice == 'Y' || cChoice == 'y'){
         srand(time(NULL));
         iTicketNumber = rand();
+
+        // std::stringstream stream;
+        // stream << iTicketNumber;
+
+        // stream >> sTktNumStr;
+
+        sTktNumStr = std::to_string(iTicketNumber);
+
+        if(iTicketNumber)
+            bTicketingStatus = true;
+
+        getCurrentTime();
         sRecordLocator = sRecordLocator + sName.at(0) + sItinerary[2] + cGender + sEmail[4] + sPhoneNumber.at(5) + sName[3];
-        
+
         //converting all characters to uppercase
-        for(int i=0;sRecordLocator[i]!=0;i++)
+        for(int i = 0; sRecordLocator[i] != 0; i++)
         {
-            if(sRecordLocator[i]<='z' && sRecordLocator[i]>='a')
-            sRecordLocator[i]+='A'-'a';
+            if(sRecordLocator[i] >= 'a' && sRecordLocator[i] <= 'z')
+            sRecordLocator[i] -= 32;
         }
         
-
         std::cout << "Documents Issued Successfully"; NEWLINE
         std::cout << "Your Record Locator (PNR) is  : " << sRecordLocator; NEWLINE
         std::cout << "Your Ticket Number is         : " << iTicketNumber; NEWLINE
     }
     NEWLINE
 
+    if(bTicketingStatus == true){
+        outputFile.open(sRecordLocator + ".txt");
+        std::string temp;
+
+        temp = "Electronic Ticket\n"
+                "Status: Ticketed\n"
+                "--------------------------------------------Ticket Image--------------------------------------------\n" 
+                "| AGY        : " + sReservationPCC + "                           O/D    : " + sItinerary + "           FF No   :                 |\n"
+                "| ISSUED     : " + sTicketingTime + "      TKT    : " + sTktNumStr + "         AGT     : apanchal        |\n"
+                "| PNR        : " + sRecordLocator + "                         IATA   : 71752214" + "                                    |\n"
+                "----------------------------------------------------------------------------------------------------\n";
+        
+        outputFile << temp;
+        outputFile.close();
+    }
+
+    NEWLINE
     //Action Items
     //Change status of ticketing flag & add time of ticketing too
     //Export this ticket in SPRK format & PNR details to a txt file
     //Make sure you are able to access & show the output if someone enters the PNR as OrderRetrieve
+}
+
+void bookAndTicket::ampOrderRetrieve(){
+    //local vars
+    std::ifstream inputFile;
+    std::string sTempRecLoc;
+    std::string sTempString;
+    std::vector<std::string> sTempVec;
+
+    //code
+    std::cout << "Enter Record Locator to open : ";
+    std::cin >> sTempRecLoc;
+    inputFile.open(sTempRecLoc + ".txt");
+
+    NEWLINE
+
+    if(inputFile)
+    {
+        //while(inputFile >> sTempString)
+        while(!inputFile.eof())
+        {
+            //inputFile >> sTempString;
+            std::getline(inputFile, sTempString);
+            std::cout << sTempString;
+        }
+
+        for(auto i : sTempVec){
+            std::cout << i; NEWLINE
+        }
+    }
+
+    inputFile.close();
+
+    NEWLINE;
 }
