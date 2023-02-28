@@ -75,13 +75,45 @@ class bookAndTicket{
 };
 
 int main(){
+    //local var
     int a = {199+1};
+    char cChoice = 0;
 
-    bookAndTicket pnr1;
-    pnr1.ampAirShopping();
+    //code
+    do{
+        NEWLINE
+        std::cout << "1. Create an Order & issue Ticket"; NEWLINE
+        std::cout << "2. Retrieve an booked Order"; NEWLINE
+        std::cout << "3. Exit"; NEWLINE NEWLINE 
+        std::cout << "Enter option : ";
+        std::cin >> cChoice; NEWLINE
+
+        bookAndTicket pnr1;
+
+        switch(cChoice)
+        {
+            case '1':
+            pnr1.ampAirShopping();
+            break;
+
+            case '2':
+            pnr1.ampOrderRetrieve();
+            break;
+
+            case '3':
+            std::cout << "Exitting"; NEWLINE
+            exit(0);
+            break;
+
+            default:
+            std::cout << "Enter correct option"; NEWLINE
+            break;
+        }
+    }
+    while(true);
+
     //pnr1.ampOfferPrice();
     //pnr1.ampOrderCreate();
-    pnr1.ampOrderRetrieve();
     return 0;
 }
 
@@ -293,7 +325,7 @@ void bookAndTicket::ampOfferPrice(){
 
 void bookAndTicket::ampOrderCreate()
 {
-    //take offerID & remaining PRINT details
+    //take offer & remaining PRINT details
     //create PNR & issue ticket assuming payment & mode is always provided immediately & is cash
 
     //local vars
