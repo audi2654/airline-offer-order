@@ -9,11 +9,10 @@
     //3. Itinerary
     //4. Name of pax
     //5. Ticket issuance status/time
-    //once PNR generated I should be able to modify any of above 5 elements independently  
 
 //4. Ticket Issuance - OC
 //5. Export ticket as text file
-//6. Should be able Retrieve that ticket
+//6. Should be able Retrieve that ticket - ORet
 
 #include <iostream>
 #include <string>
