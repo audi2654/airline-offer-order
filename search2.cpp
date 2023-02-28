@@ -12,11 +12,16 @@
     //once PNR generated I should be able to modify any of above 5 elements independently  
 
 //4. Ticket Issuance - OC
+//5. Export ticket as text file
+//6. Should be able Retrieve that ticket
 
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <vector>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
 
 using std::endl;
 
@@ -33,10 +38,14 @@ class bookAndTicket{
         std::string sName;
         bool bTicketingStatus;
 
+        std::string sTravelDate;
+        std::string sSelectedOffer;
         std::string sEmail;
-        std::string sFullName;
-        char cGender = 'N';
+        char cGender;
         std::string sDateOfBirth;
+        std::string sRecordLocator;
+        unsigned int iTicketNumber;
+        std::string sTicketingTime;
 
         //creating a no arg constructor & initializing vars to some default values
         bookAndTicket(){
@@ -45,48 +54,66 @@ class bookAndTicket{
             sItinerary = "DXB-PNQ";
             sName = "Aditya";
             bTicketingStatus = false;
+
+            sTravelDate = "10-05-2023";
+            sSelectedOffer = "PremiumClass";
+            sEmail = "test@gmail.com";
+            cGender = 'N';
+            sDateOfBirth = "03-02-1998";
+            sRecordLocator = "";
+            iTicketNumber = 1234567890;
+            sTicketingTime = "";
         }
 
         //function declarations/prototype
         void enterDetails();
-        std::string ampAirShopping(std::string, std::string);
-        void ampOfferPrice(std::string);
+        void getCurrentTime();
+        void ampAirShopping();
+        void ampOfferPrice();
         void ampOrderCreate();
+        void ampOrderRetrieve();
 };
 
 int main(){
     //local var
     int a = {199+1};
-    std::string sTempString, sTempString2, sTempTravelDate, sTempIti;
-    std::string sItiHolder;
-    char cChoice = 'N';
+    char cChoice = 0;
 
     //code
-    std::cout << a SPACE << "OK" << endl; NEWLINE
+    do{
+        NEWLINE
+        std::cout << "1. Create an Order & issue Ticket"; NEWLINE
+        std::cout << "2. Retrieve an booked Order"; NEWLINE
+        std::cout << "3. Exit"; NEWLINE NEWLINE 
+        std::cout << "Enter option : ";
+        std::cin >> cChoice; NEWLINE
 
-    bookAndTicket pnr1;
+        bookAndTicket pnr1;
 
-    NEWLINE
-    std::cout << "Enter travel date (DD-MM-YYYY) : ";
-    std::cin >> sTempTravelDate; NEWLINE
+        switch(cChoice)
+        {
+            case '1':
+            pnr1.ampAirShopping();
+            break;
 
-    std::cout << "Enter 1 way route in given format XXX-XXX : ";
-    std::cin >> sTempIti; NEWLINE
+            case '2':
+            pnr1.ampOrderRetrieve();
+            break;
 
-    sItiHolder = pnr1.ampAirShopping(sTempIti, sTempTravelDate);
+            case '3':
+            std::cout << "Exitting"; NEWLINE
+            exit(0);
+            break;
 
-    std::cout << "Continue to Price the Offer (Y/N) ? : "; NEWLINE
-    std::cin >> cChoice;
-
-    if(cChoice == 'Y' || cChoice == 'y'){
-        pnr1.ampOfferPrice(sItiHolder);
+            default:
+            std::cout << "Enter correct option"; NEWLINE
+            break;
+        }
     }
+    while(true);
 
-
-    pnr1.enterDetails();
     //pnr1.ampOfferPrice();
     //pnr1.ampOrderCreate();
-
     return 0;
 }
 
@@ -95,52 +122,87 @@ void bookAndTicket::enterDetails(){
     //local vars
 
     //code
-    //std::cin.clear();
-    //std::cin.sync();
     std::cin.ignore();
 
     std::cout << "Enter Name : ";
     std::getline(std::cin, sName);
-    std::cout << sName << endl; NEWLINE
 
     std::cout << "Enter Phone Number : ";
     std::getline(std::cin, sPhoneNumber);
-    std::cout << sPhoneNumber << endl; NEWLINE
 
     std::cout << "Enter Email ID : ";
     std::getline(std::cin, sEmail);
-    std::cout << sEmail << endl; NEWLINE
 
     std::cout << "Enter Date Of Birth (DD-MM-YYYY) : ";
     std::getline(std::cin, sDateOfBirth);
-    std::cout << sDateOfBirth << endl; NEWLINE
 
     std::cout << "Enter Gender (F/M) : ";
     std::cin >> cGender;
-    std::cout << cGender << endl; NEWLINE
-
 }
 
-std::string bookAndTicket::ampAirShopping(std::string sIti, std::string sDate)
+void bookAndTicket::getCurrentTime(){
+    time_t currentTime;
+    tm *currentTimeStruct;
+
+    char dateBuff[100];
+    char timeBuff[100];
+
+    time(&currentTime);
+
+    currentTimeStruct = localtime(&currentTime);
+
+    strftime(timeBuff, 50, "%T", currentTimeStruct);
+    strftime(dateBuff, 50, "%B %d %Y", currentTimeStruct);
+
+    sTicketingTime = sTicketingTime + timeBuff + " " + dateBuff;
+}
+
+void bookAndTicket::ampAirShopping()
 {
     //local variable
-    std::string sTempString1, sTempString2;
+    std::string sTempString, sTempString2;
     std::vector<std::string> sTempVec;
     bool bAvailabilityFlag = false;
 
     //code
-    sItinerary = sIti;
+    NEWLINE
+    std::cout << "Enter travel date (DD-MM-YYYY) : ";
+    std::cin >> sTravelDate; NEWLINE
+
+    std::cout << "Enter 1 way route in given format XXX-XXX : ";
+    //std::getline(std::cin, sItinerary);
+    std::cin >> sItinerary; NEWLINE
 
     std::cout << "--------------AIRSHOPPING RS--------------"; NEWLINE
 
     //open file of markets
+    //std::ifstream inputFile("markets.txt", std::ios::in);           //opening file with read mode
     std::ifstream inputFile("markets.txt");                           //opening file with read mode
+    //inputFile.open("markets.txt");
 
         //print that tempStr
-        while(inputFile >> sTempString1)                               //works perfectly without any space issue in .txt file
+        //while(std::getline(inputFile, sTempString))                 //for some reason prints first character from file as whitespace               
+        while(inputFile >> sTempString)                               //works perfectly without any space issue in .txt file
         {
-            sTempVec.push_back(sTempString1);
+            //std::cout << sTempString SPACE << "\n";
+            sTempVec.push_back(sTempString);
         }
+        
+        /*for(auto i : sTempVec){
+                std::cout << i; NEWLINE
+        }*/
+
+        //std::cout << sTempVec.at(5); NEWLINE    
+
+        //compare it with itinerary string
+        /*if(sItinerary.compare(sTempString) == 0){
+            std::cout << "String Match" << endl; NEWLINE
+        }
+        else{
+            std::cout << "String Do Not Match" << endl; NEWLINE
+            std::cout << "sItinerary  : " << sItinerary << endl; NEWLINE
+            std::cout << "sTempString : " << sTempString << endl; NEWLINE
+        }*/
 
         //compare it with itinerary string
         for(auto i : sTempVec){
@@ -155,8 +217,8 @@ std::string bookAndTicket::ampAirShopping(std::string sIti, std::string sDate)
         }
 
         if(bAvailabilityFlag == true){
-            std::cout << "Below Offers Available for Route : " << sTempString2  << " for date : " << sDate << endl; NEWLINE
-            //ampOfferPrice();
+            std::cout << "Below Offers Available for Route : " << sTempString2  << " for Date " << sTravelDate << endl; NEWLINE
+            ampOfferPrice();
         }
         else{
             std::cout << "No Fares Available for Route. Try from below list." << endl; NEWLINE
@@ -165,12 +227,21 @@ std::string bookAndTicket::ampAirShopping(std::string sIti, std::string sDate)
             }
         }
 
-    inputFile.close();
+        /*for(auto i = 0; i < sTempVec.size(); i++){
+            //int itemp = sItinerary.compare(i);
+            if(sItinerary == sTempVec.at(i)){
+                std::cout << "String Match " << i << endl; NEWLINE
+                break;
+            }
+        }*/
 
-    return sIti;
+        // std::cout << "sItinerary  : " << sItinerary << endl; NEWLINE
+        // std::cout << "sTempString : " << sTempString << endl; NEWLINE
+
+    inputFile.close();
 }
 
-void bookAndTicket::ampOfferPrice(std::string sIti){
+void bookAndTicket::ampOfferPrice(){
     //next step is to show 4 offers for sItinerary route
     //show as economy, premium economy, business & first class with Fares from prices.txt file
     //price them right in this RQ function & show final price to pay of pax with taxes
@@ -182,22 +253,24 @@ void bookAndTicket::ampOfferPrice(std::string sIti){
     std::vector<std::string> sTempVec;
     unsigned int iClassOption = 0;
     char cCharOption = 'N';
+    int num = 0;
 
     //code
     std::cout << "--------------OFFERPRICE RS--------------"; NEWLINE
 
-    inputFile.open("prices.txt");
+    inputFile.open("classPrices.txt");
 
     //reading prices file & pushing its strings into sTempString
     while(inputFile >> sTempString)                               //works perfectly without any space issue in .txt file
     {
+        //std::cout << sTempString SPACE << "\n";
         sTempVec.push_back(sTempString);
     }
 
     inputFile.close();
 
     for(auto i : sTempVec){
-        std::cout << i; 
+        std::cout << ++num << ". " << i; 
         NEWLINE
     }
     NEWLINE
@@ -210,44 +283,164 @@ void bookAndTicket::ampOfferPrice(std::string sIti){
     {
         case 1:
         std::cout << "Accepted Offer is " << sTempVec.at(0); NEWLINE
-
-        /*do
-        {
-            std::cout << "Continue to Book & Issue Ticket (Y/N) ? : "; NEWLINE
-            std::cin >> cCharOption;
-
-            if(cCharOption == 'Y' || cCharOption == 'y'){
-                std::cout << "---Creating PNR & Issuing Ticket---";
-                //ampOrderCreate();
-                return;
-            }
-        }
-        while (cCharOption != 'N' || cCharOption != 'n');*/
+        sSelectedOffer = sTempVec.at(0);
         break;
 
         case 2:
         std::cout << "Accepted Offer is " << sTempVec.at(1); NEWLINE
+        sSelectedOffer = sTempVec.at(1);
         break;
 
         case 3:
         std::cout << "Accepted Offer is " << sTempVec.at(2); NEWLINE
+        sSelectedOffer = sTempVec.at(2);
         break;
 
         case 4:
         std::cout << "Accepted Offer is " << sTempVec.at(3); NEWLINE
+        sSelectedOffer = sTempVec.at(3);
         break;
+
+        default:
+        std::cout << "Wrong Option Entered"; NEWLINE
+        exit(1);
     }
+
+    do
+        {
+            NEWLINE
+            std::cout << "Continue to Book & Issue Ticket (Y/N) ? : ";
+            std::cin >> cCharOption;
+
+            if(cCharOption == 'Y' || cCharOption == 'y'){
+                std::cout << "\n ---Creating PNR & Issuing Ticket---";
+                ampOrderCreate();
+                return;
+            }
+        }
+        while (cCharOption != 'N' || cCharOption != 'n');
 
     NEWLINE
 }
 
 void bookAndTicket::ampOrderCreate()
 {
-    //take offerID & remaining PRINT details
+    //take offer & remaining PRINT details
     //create PNR & issue ticket assuming payment & mode is always provided immediately & is cash
+
+    //local vars
+    char cChoice = 'N';
+    std::ofstream outputFile;
+    std::string sTktNumStr;
+
+
+    //function decl
+
+    NEWLINE
+    enterDetails();
+
+    //show all details
+    NEWLINE
+    std::cout << "-----Entered details are as below-----"; NEWLINE
+    std::cout << "Name of Passenger     : " << sName; NEWLINE
+    std::cout << "Phone Number          : " << sPhoneNumber; NEWLINE
+    std::cout << "Date Of Birth         : " << sDateOfBirth; NEWLINE
+    std::cout << "EmailID               : " << sEmail; NEWLINE
+    std::cout << "Gender                : " << cGender; NEWLINE
+    std::cout << "Itinerary             : " << sItinerary; NEWLINE
+    std::cout << "Offer Selected        : " << sSelectedOffer; NEWLINE
+    std::cout << "Date Of Travel        : " << sTravelDate; NEWLINE
+    std::cout << "Reservation Office    : " << sReservationPCC; NEWLINE
+
+    NEWLINE
+    std::cout << "Default Form of Payment : CASH"; NEWLINE
+    std::cout << "Issue Documents ? (Y/N) : ";
+    std::cin >> cChoice;
+
+    NEWLINE
+    if(cChoice == 'Y' || cChoice == 'y'){
+        srand(time(NULL));
+        iTicketNumber = rand();
+
+        // std::stringstream stream;
+        // stream << iTicketNumber;
+
+        // stream >> sTktNumStr;
+
+        sTktNumStr = std::to_string(iTicketNumber);
+
+        if(iTicketNumber)
+            bTicketingStatus = true;
+
+        getCurrentTime();
+        sRecordLocator = sRecordLocator + sName.at(0) + sItinerary[2] + cGender + sEmail[4] + sPhoneNumber.at(5) + sName[3];
+
+        //converting all characters to uppercase
+        for(int i = 0; sRecordLocator[i] != 0; i++)
+        {
+            if(sRecordLocator[i] >= 'a' && sRecordLocator[i] <= 'z')
+            sRecordLocator[i] -= 32;
+        }
+        
+        std::cout << "Documents Issued Successfully"; NEWLINE
+        std::cout << "Your Record Locator (PNR) is  : " << sRecordLocator; NEWLINE
+        std::cout << "Your Ticket Number is         : " << iTicketNumber; NEWLINE
+    }
     NEWLINE
 
-    std::cout << "Inside OrderCreate"; NEWLINE
+    if(bTicketingStatus == true){
+        outputFile.open(sRecordLocator + ".txt");
+        std::string temp;
 
-   
+        temp = "Electronic Ticket\n"
+                "Status: Ticketed\n"
+                "--------------------------------------------Ticket Image--------------------------------------------\n" 
+                "| AGY        : " + sReservationPCC + "                           O/D    : " + sItinerary + "           FF No   :                 |\n"
+                "| ISSUED     : " + sTicketingTime + "      TKT    : " + sTktNumStr + "         AGT     : apanchal        |\n"
+                "| PNR        : " + sRecordLocator + "                         IATA   : 71752214" + "                                    |\n"
+                "----------------------------------------------------------------------------------------------------\n";
+        
+        outputFile << temp;
+        outputFile.close();
+    }
+
+    NEWLINE
+    //Action Items
+    //Change status of ticketing flag & add time of ticketing too
+    //Export this ticket in SPRK format & PNR details to a txt file
+    //Make sure you are able to access & show the output if someone enters the PNR as OrderRetrieve
+}
+
+void bookAndTicket::ampOrderRetrieve(){
+    //local vars
+    std::ifstream inputFile;
+    std::string sTempRecLoc;
+    std::string sTempString;
+    std::vector<std::string> sTempVec;
+
+    //code
+    std::cout << "Enter Record Locator to open : ";
+    std::cin >> sTempRecLoc;
+    inputFile.open(sTempRecLoc + ".txt");
+
+    NEWLINE
+
+    if(inputFile)
+    {
+        //while(inputFile >> sTempString)
+        while(!inputFile.eof())
+        {
+            //inputFile >> sTempString;
+            std::getline(inputFile, sTempString);
+            std::cout << sTempString;
+        }
+
+        for(auto i : sTempVec){
+            std::cout << i; NEWLINE
+        }
+    }
+
+    inputFile.close();
+
+    NEWLINE;
 }

@@ -1,7 +1,7 @@
-//One class, 3 funtions - AS, OP, OC
+//One class, 4 funtions - AS, OP, OC, ORet
 
 //1. Searching for market - AS
-//2. Offer generation & pricing - OF
+//2. Offer generation & pricing - OP
 //3. PNR Creation - OC
     //PNR requires 5 mandatory elements to create a reservation/booking - PRINT
     //1. Phone number
@@ -169,82 +169,49 @@ void bookAndTicket::ampAirShopping()
     std::cin >> sTravelDate; NEWLINE
 
     std::cout << "Enter 1 way route in given format XXX-XXX : ";
-    //std::getline(std::cin, sItinerary);
     std::cin >> sItinerary; NEWLINE
 
     std::cout << "--------------AIRSHOPPING RS--------------"; NEWLINE
 
     //open file of markets
-    //std::ifstream inputFile("markets.txt", std::ios::in);           //opening file with read mode
     std::ifstream inputFile("markets.txt");                           //opening file with read mode
-    //inputFile.open("markets.txt");
 
-        //print that tempStr
-        //while(std::getline(inputFile, sTempString))                 //for some reason prints first character from file as whitespace               
-        while(inputFile >> sTempString)                               //works perfectly without any space issue in .txt file
-        {
-            //std::cout << sTempString SPACE << "\n";
-            sTempVec.push_back(sTempString);
-        }
-        
-        /*for(auto i : sTempVec){
-                std::cout << i; NEWLINE
-        }*/
+    //pushing its strings into sTempVec
+    while(inputFile >> sTempString)
+    {
+        sTempVec.push_back(sTempString);
+    }
 
-        //std::cout << sTempVec.at(5); NEWLINE    
-
-        //compare it with itinerary string
-        /*if(sItinerary.compare(sTempString) == 0){
-            std::cout << "String Match" << endl; NEWLINE
+    //compare it with itinerary string
+    for(auto i : sTempVec){
+        if(sItinerary.compare(i) == 0){
+            bAvailabilityFlag = true;
+            sTempString2 = std::string(i);
+            break;
         }
         else{
-            std::cout << "String Do Not Match" << endl; NEWLINE
-            std::cout << "sItinerary  : " << sItinerary << endl; NEWLINE
-            std::cout << "sTempString : " << sTempString << endl; NEWLINE
-        }*/
+            bAvailabilityFlag = false;
+        }
+    }
 
-        //compare it with itinerary string
+    if(bAvailabilityFlag == true){
+        std::cout << "Below Offers Available for Route : " << sTempString2  << " for Date " << sTravelDate << endl; NEWLINE
+        ampOfferPrice();
+    }
+    else{
+        std::cout << "No Fares Available for Route. Try from below list." << endl; NEWLINE
         for(auto i : sTempVec){
-            if(sItinerary.compare(i) == 0){
-                bAvailabilityFlag = true;
-                sTempString2 = std::string(i);
-                break;
-            }
-            else{
-                bAvailabilityFlag = false;
-            }
+            std::cout << i; NEWLINE
         }
-
-        if(bAvailabilityFlag == true){
-            std::cout << "Below Offers Available for Route : " << sTempString2  << " for Date " << sTravelDate << endl; NEWLINE
-            ampOfferPrice();
-        }
-        else{
-            std::cout << "No Fares Available for Route. Try from below list." << endl; NEWLINE
-            for(auto i : sTempVec){
-                std::cout << i; NEWLINE
-            }
-        }
-
-        /*for(auto i = 0; i < sTempVec.size(); i++){
-            //int itemp = sItinerary.compare(i);
-            if(sItinerary == sTempVec.at(i)){
-                std::cout << "String Match " << i << endl; NEWLINE
-                break;
-            }
-        }*/
-
-        // std::cout << "sItinerary  : " << sItinerary << endl; NEWLINE
-        // std::cout << "sTempString : " << sTempString << endl; NEWLINE
+    }
 
     inputFile.close();
 }
 
 void bookAndTicket::ampOfferPrice(){
     //next step is to show 4 offers for sItinerary route
-    //show as economy, premium economy, business & first class with Fares from prices.txt file
-    //price them right in this RQ function & show final price to pay of pax with taxes
-    //https://java2blog.com/split-string-space-cpp/
+    //show as economy, premium economy, business & first class with Fares from classPrices.txt file
+    //price them right in this RQ function & show final price to pay
 
     //local vars
     std::ifstream inputFile;
@@ -257,12 +224,12 @@ void bookAndTicket::ampOfferPrice(){
     //code
     std::cout << "--------------OFFERPRICE RS--------------"; NEWLINE
 
+    //reading classPrices file
     inputFile.open("classPrices.txt");
 
-    //reading prices file & pushing its strings into sTempString
-    while(inputFile >> sTempString)                               //works perfectly without any space issue in .txt file
+    //pushing its strings into sTempVec
+    while(inputFile >> sTempString)
     {
-        //std::cout << sTempString SPACE << "\n";
         sTempVec.push_back(sTempString);
     }
 
@@ -317,7 +284,7 @@ void bookAndTicket::ampOfferPrice(){
                 return;
             }
         }
-        while (cCharOption != 'N' || cCharOption != 'n');
+    while (cCharOption != 'N' || cCharOption != 'n');
 
     NEWLINE
 }
@@ -361,11 +328,6 @@ void bookAndTicket::ampOrderCreate()
         srand(time(NULL));
         iTicketNumber = rand();
 
-        // std::stringstream stream;
-        // stream << iTicketNumber;
-
-        // stream >> sTktNumStr;
-
         sTktNumStr = std::to_string(iTicketNumber);
 
         if(iTicketNumber)
@@ -374,7 +336,6 @@ void bookAndTicket::ampOrderCreate()
         getCurrentTime();
         sRecordLocator = sRecordLocator + sName.at(0) + sItinerary[2] + cGender + sEmail[4] + sPhoneNumber.at(5) + sName[3];
 
-        //converting all characters to uppercase
         for(int i = 0; sRecordLocator[i] != 0; i++)
         {
             if(sRecordLocator[i] >= 'a' && sRecordLocator[i] <= 'z')
@@ -404,10 +365,6 @@ void bookAndTicket::ampOrderCreate()
     }
 
     NEWLINE
-    //Action Items
-    //Change status of ticketing flag & add time of ticketing too
-    //Export this ticket in SPRK format & PNR details to a txt file
-    //Make sure you are able to access & show the output if someone enters the PNR as OrderRetrieve
 }
 
 void bookAndTicket::ampOrderRetrieve(){
@@ -426,10 +383,8 @@ void bookAndTicket::ampOrderRetrieve(){
 
     if(inputFile)
     {
-        //while(inputFile >> sTempString)
         while(!inputFile.eof())
         {
-            //inputFile >> sTempString;
             std::getline(inputFile, sTempString);
             std::cout << sTempString;
         }
